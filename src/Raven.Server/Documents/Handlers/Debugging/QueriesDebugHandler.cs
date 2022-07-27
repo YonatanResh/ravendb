@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
 using Sparrow.Json;
@@ -39,12 +40,14 @@ namespace Raven.Server.Documents.Handlers.Debugging
             {
                 writer.WriteStartObject();
 
-                var isFirst = true;
+                writer.WritePropertyName("@Metadata");
+                writer.WriteStartObject();
+                writer.AddPropertiesForDebug(ServerStore, skipLastComma: true);
+                writer.WriteEndObject();
+
                 foreach (var group in Database.QueryRunner.CurrentlyRunningQueries.GroupBy(x => x.IndexName))
                 {
-                    if (isFirst == false)
-                        writer.WriteComma();
-                    isFirst = false;
+                    writer.WriteComma();
 
                     writer.WritePropertyName(group.Key);
                     writer.WriteStartArray();
@@ -78,6 +81,8 @@ namespace Raven.Server.Documents.Handlers.Debugging
                 var queriesList = new List<DynamicJsonValue>();
 
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
 
                 writer.WritePropertyName("TotalCachedQueries");
                 writer.WriteInteger(queryCache.Length);

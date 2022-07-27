@@ -151,7 +151,7 @@ namespace Raven.Server.Web.Studio
                 using (ServerStore.ContextPool.AllocateOperationContext(out TransactionOperationContext context))
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    context.Write(writer, result.ToJson());
+                    WriteForDebug(context, writer, result.ToJson());
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
 using Sparrow.Json;
@@ -19,6 +20,8 @@ namespace Raven.Server.Documents.Handlers.Debugging
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
+
+                    writer.AddPropertiesForDebug(ServerStore);
 
                     var first = true;
                     foreach (var identity in Database.ServerStore.Cluster.GetIdentitiesFromPrefix(context, Database.Name, start, pageSize))

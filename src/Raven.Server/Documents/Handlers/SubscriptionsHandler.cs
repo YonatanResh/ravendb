@@ -13,6 +13,7 @@ using Raven.Server.Documents.Includes;
 using Raven.Server.Documents.Replication;
 using Raven.Server.Documents.Subscriptions;
 using Raven.Server.Documents.TcpHandlers;
+using Raven.Server.Extensions;
 using Raven.Server.Json;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
@@ -283,6 +284,8 @@ namespace Raven.Server.Documents.Handlers
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
+
+                    writer.AddPropertiesForDebug(ServerStore);
 
                     var subscriptionsAsBlittable = subscriptions.Select(x => new DynamicJsonValue()
                     {

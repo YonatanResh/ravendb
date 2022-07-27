@@ -27,7 +27,7 @@ namespace Raven.Server.Web.System
             using (ServerStore.ContextPool.AllocateOperationContext(out JsonOperationContext context))
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(writer, djv);
+                WriteForDebug(context, writer, djv);
             }
 
             static DynamicJsonValue ToDynamic(TcpStatistics stats)
@@ -70,7 +70,7 @@ namespace Raven.Server.Web.System
             using (ServerStore.ContextPool.AllocateOperationContext(out JsonOperationContext context))
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(writer, djv);
+                WriteForDebug(context, writer, djv);
             }
 
             static DynamicJsonValue ToDynamic(TcpConnectionInformation[] connections)

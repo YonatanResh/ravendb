@@ -320,7 +320,7 @@ namespace Raven.Server.Documents.Handlers
                     });
                 }
 
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["Stats"] = data
                 });
@@ -349,7 +349,7 @@ namespace Raven.Server.Documents.Handlers
                     });
                 }
 
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["Stats"] = data
                 });
@@ -382,7 +382,7 @@ namespace Raven.Server.Documents.Handlers
                     });
                 }
 
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["Stats"] = stats
                 });
@@ -406,7 +406,7 @@ namespace Raven.Server.Documents.Handlers
                     });
                 }
 
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["Queue-Info"] = data
                 });

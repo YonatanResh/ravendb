@@ -9,6 +9,7 @@ using Raven.Client;
 using Raven.Client.Exceptions;
 using Raven.Client.ServerWide;
 using Raven.Server.Config;
+using Raven.Server.Extensions;
 using Raven.Server.Json;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide;
@@ -70,7 +71,7 @@ namespace Raven.Server.Documents.Handlers.Admin
             {
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    context.Write(writer, settingsResult.ToJson());
+                    WriteForDebug(context, writer, settingsResult.ToJson());
                 }
             }
         }

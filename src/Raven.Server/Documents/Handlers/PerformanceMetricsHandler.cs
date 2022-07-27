@@ -35,7 +35,7 @@ namespace Raven.Server.Documents.Handlers
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 var result = GetPerformanceMetricsResponse(Database);
-                context.Write(writer, result.ToJson());
+                WriteForDebug(context, writer, result.ToJson());
             }
         }
 

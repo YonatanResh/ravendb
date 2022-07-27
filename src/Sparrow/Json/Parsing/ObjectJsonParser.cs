@@ -118,6 +118,14 @@ namespace Sparrow.Json.Parsing
             }
             return djv;
         }
+
+        public void AddFirst(string name, object value)
+        {
+            if (_source != null)
+                Remove(name);
+
+            Properties.Insert(0, (name, value));
+        }
     }
 
     public class DynamicJsonArray : IEnumerable<object>, IDisposable

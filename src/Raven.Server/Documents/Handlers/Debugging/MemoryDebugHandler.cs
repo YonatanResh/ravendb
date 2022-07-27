@@ -6,7 +6,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
+using Raven.Server.ServerWide;
 using Raven.Server.Web;
 using Sparrow;
 using Sparrow.Json;
@@ -39,7 +41,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
 
                 await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    context.Write(write, djv);
+                    WriteForDebug(context, write, djv);
                 }
             }
 
@@ -93,7 +95,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
 
                 await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    context.Write(write, djv);
+                    WriteForDebug(context, write, djv);
                 }
             }
         }
@@ -195,7 +197,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
 
                     await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                     {
-                        context.Write(write, djv);
+                        WriteForDebug(context, write, djv);
                     }
 
                     return;
@@ -236,7 +238,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
 
                     await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                     {
-                        context.Write(write, djv);
+                        WriteForDebug(context, write, djv);
                     }
 
                     return;
@@ -259,7 +261,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
             {
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    WriteMemoryStats(writer, context, includeThreads, includeMappings);
+                    WriteMemoryStats(writer, context, includeThreads, includeMappings, ServerStore);
                 }
             }
         }
@@ -271,14 +273,16 @@ namespace Raven.Server.Documents.Handlers.Debugging
             {
                 await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
-                    context.Write(write, EncryptionBuffersPool.Instance.GetStats().ToJson());
+                    WriteForDebug(context, write, EncryptionBuffersPool.Instance.GetStats().ToJson());
                 }
             }
         }
 
-        private static void WriteMemoryStats(AsyncBlittableJsonTextWriter writer, JsonOperationContext context, bool includeThreads, bool includeMappings)
+        private static void WriteMemoryStats(AsyncBlittableJsonTextWriter writer, JsonOperationContext context, bool includeThreads, bool includeMappings, ServerStore serverStore)
         {
             writer.WriteStartObject();
+
+            writer.AddPropertiesForDebug(serverStore);
 
             var memInfo = MemoryInformation.GetMemoryInformationUsingOneTimeSmapsReader();
             long managedMemoryInBytes = AbstractLowMemoryMonitor.GetManagedMemoryInBytes();

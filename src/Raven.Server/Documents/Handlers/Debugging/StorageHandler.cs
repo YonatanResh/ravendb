@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
 using Raven.Server.Utils;
@@ -176,6 +177,8 @@ namespace Raven.Server.Documents.Handlers.Debugging
                 {
                     writer.WriteStartObject();
 
+                    writer.AddPropertiesForDebug(ServerStore);
+
                     writer.WritePropertyName("BasePath");
                     writer.WriteString(Database.Configuration.Core.DataDirectory.FullPath);
                     writer.WriteComma();
@@ -217,16 +220,16 @@ namespace Raven.Server.Documents.Handlers.Debugging
         [RavenAction("/databases/*/debug/storage/all-environments/report", "GET", AuthorizationStatus.ValidUser, EndpointType.Read, IsDebugInformationEndpoint = true)]
         public async Task AllEnvironmentsReport()
         {
-            var name = GetStringQueryString("database");
-
             using (ContextPool.AllocateOperationContext(out DocumentsOperationContext context))
             {
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
 
+                    writer.AddPropertiesForDebug(ServerStore);
+
                     writer.WritePropertyName("DatabaseName");
-                    writer.WriteString(name);
+                    writer.WriteString(Database.Name);
                     writer.WriteComma();
 
                     writer.WritePropertyName("Environments");

@@ -20,7 +20,7 @@ namespace Raven.Server.Web.System
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 var result = IoMetricsUtil.GetIoMetricsResponse(GetSystemEnvironment(ServerStore), null);
-                context.Write(writer, result.ToJson());
+                WriteForDebug(context, writer, result.ToJson());
             }
         }
 

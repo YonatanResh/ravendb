@@ -84,11 +84,10 @@ namespace Raven.Server.Documents.Handlers.Debugging
 
                         if (samplesCount == 1)
                         {
-                            context.Write(writer,
-                                new DynamicJsonValue
-                                {
-                                    ["Runaway Threads"] = threadsInfos.First().ToJson()
-                                });
+                            WriteForDebug(context, writer, new DynamicJsonValue
+                            {
+                                ["Runaway Threads"] = threadsInfos.First().ToJson()
+                            });
                             return;
                         }
 

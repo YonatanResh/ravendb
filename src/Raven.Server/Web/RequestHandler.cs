@@ -29,6 +29,7 @@ using Raven.Server.ServerWide.Context;
 using Raven.Server.TrafficWatch;
 using Sparrow;
 using Sparrow.Json;
+using Sparrow.Json.Parsing;
 
 namespace Raven.Server.Web
 {
@@ -727,6 +728,16 @@ namespace Raven.Server.Web
 
             return false;
         }
+
+        protected void WriteForDebug(JsonOperationContext context, AsyncBlittableJsonTextWriter write, DynamicJsonValue djv)
+        {
+            djv.AddFirst(nameof(ServerStore.NodeTag), ServerStore.NodeTag);
+            djv.AddFirst(nameof(ServerStore.Server.WebUrl), ServerStore.Server.WebUrl);
+            djv.AddFirst(nameof(DateTime), DateTime.UtcNow);
+
+            context.Write(write, djv);
+        }
+
         protected void RedirectToLeader()
         {
             if (ServerStore.LeaderTag == null)
@@ -760,6 +771,6 @@ namespace Raven.Server.Web
         protected virtual OperationCancelToken CreateOperationToken(TimeSpan cancelAfter)
         {
             return new OperationCancelToken(cancelAfter, ServerStore.ServerShutdown, HttpContext.RequestAborted);
+        }
     }
-}
 }

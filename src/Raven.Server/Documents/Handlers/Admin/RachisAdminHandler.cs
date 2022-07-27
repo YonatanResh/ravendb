@@ -141,7 +141,7 @@ namespace Raven.Server.Documents.Handlers.Admin
                         [nameof(ClusterObserverDecisions.ObserverLog)] = new DynamicJsonArray(res.List)
                     };
 
-                    context.Write(writer, json);
+                    WriteForDebug(context, writer, json);
                     return;
                 }
             }
@@ -155,7 +155,7 @@ namespace Raven.Server.Documents.Handlers.Admin
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 context.OpenReadTransaction();
-                context.Write(writer, ServerStore.GetLogDetails(context));
+                WriteForDebug(context, writer, ServerStore.GetLogDetails(context));
             }
         }
 
@@ -166,6 +166,9 @@ namespace Raven.Server.Documents.Handlers.Admin
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
+
                 context.OpenReadTransaction();
                 writer.WriteArray("RachisLogHistory", ServerStore.Engine.LogHistory.GetHistoryLogs(context), context);
                 writer.WriteEndObject();
@@ -246,7 +249,7 @@ namespace Raven.Server.Documents.Handlers.Admin
                     var nodesStatues = ServerStore.GetNodesStatuses();
                     json["Status"] = DynamicJsonValue.Convert(nodesStatues);
 
-                    context.Write(writer, json);
+                    WriteForDebug(context, writer, json);
                 }
             }
         }

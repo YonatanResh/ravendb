@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Sparrow.Json;
 
@@ -35,6 +36,8 @@ namespace Raven.Server.Documents.Handlers.Admin
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
+
+                    writer.AddPropertiesForDebug(ServerStore);
 
                     writer.WriteArray(context, "Results", state, (w, c, v) =>
                     {

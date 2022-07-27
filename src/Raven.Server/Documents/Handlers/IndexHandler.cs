@@ -21,6 +21,7 @@ using Raven.Server.Documents.Indexes.Static;
 using Raven.Server.Documents.Patch;
 using Raven.Server.Documents.Queries;
 using Raven.Server.Documents.Queries.Dynamic;
+using Raven.Server.Extensions;
 using Raven.Server.Json;
 using Raven.Server.NotificationCenter.Notifications;
 using Raven.Server.NotificationCenter.Notifications.Details;
@@ -364,6 +365,8 @@ namespace Raven.Server.Documents.Handlers
 
                 writer.WriteStartObject();
 
+                writer.AddPropertiesForDebug(ServerStore);
+
                 writer.WriteArray(context, "Results", indexDefinitions, (w, c, indexDefinition) =>
                 {
                     if (namesOnly)
@@ -476,6 +479,8 @@ namespace Raven.Server.Documents.Handlers
                 }
 
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
 
                 writer.WriteArray(context.Documents, "Results", indexStats, (w, c, stats) => w.WriteIndexStats(context.Documents, stats));
 
@@ -788,6 +793,9 @@ namespace Raven.Server.Documents.Handlers
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
+
                 writer.WriteArray(context, "Results", indexes, (w, c, index) =>
                 {
                     w.WriteStartObject();

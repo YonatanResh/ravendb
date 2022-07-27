@@ -10,6 +10,7 @@ using Raven.Client.Exceptions.Security;
 using Raven.Client.ServerWide.Commands;
 using Raven.Client.ServerWide.Tcp;
 using Raven.Client.Util;
+using Raven.Server.Extensions;
 using Raven.Server.Json;
 using Raven.Server.Rachis.Remote;
 using Raven.Server.Routing;
@@ -28,20 +29,19 @@ namespace Raven.Server.Documents.Handlers.Debugging
             using (ServerStore.ContextPool.AllocateOperationContext(out JsonOperationContext context))
             await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(write,
-                    new DynamicJsonValue
-                    {
-                        ["Remote-Connections"] = new DynamicJsonArray(RemoteConnection.RemoteConnectionsList
-                            .Select(connection => new DynamicJsonValue
-                            {
-                                [nameof(RemoteConnection.RemoteConnectionInfo.Caller)] = connection.Caller,
-                                [nameof(RemoteConnection.RemoteConnectionInfo.Term)] = connection.Term,
-                                [nameof(RemoteConnection.RemoteConnectionInfo.Destination)] = connection.Destination,
-                                [nameof(RemoteConnection.RemoteConnectionInfo.StartAt)] = connection.StartAt,
-                                ["Duration"] = DateTime.UtcNow - connection.StartAt,
-                                [nameof(RemoteConnection.RemoteConnectionInfo.Number)] = connection.Number,
-                            }))
-                    });
+                WriteForDebug(context, write, new DynamicJsonValue
+                {
+                    ["Remote-Connections"] = new DynamicJsonArray(RemoteConnection.RemoteConnectionsList
+                        .Select(connection => new DynamicJsonValue
+                        {
+                            [nameof(RemoteConnection.RemoteConnectionInfo.Caller)] = connection.Caller,
+                            [nameof(RemoteConnection.RemoteConnectionInfo.Term)] = connection.Term,
+                            [nameof(RemoteConnection.RemoteConnectionInfo.Destination)] = connection.Destination,
+                            [nameof(RemoteConnection.RemoteConnectionInfo.StartAt)] = connection.StartAt,
+                            ["Duration"] = DateTime.UtcNow - connection.StartAt,
+                            [nameof(RemoteConnection.RemoteConnectionInfo.Number)] = connection.Number,
+                        }))
+                });
             }
         }
 
@@ -51,7 +51,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
             using (ServerStore.ContextPool.AllocateOperationContext(out JsonOperationContext context))
             await using (var write = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(write, ServerStore.Engine.InMemoryDebug.ToJson());
+                WriteForDebug(context, write, ServerStore.Engine.InMemoryDebug.ToJson());
             }
         }
 
@@ -62,6 +62,9 @@ namespace Raven.Server.Documents.Handlers.Debugging
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
+
                 writer.WriteArray("States", ServerStore.Engine.PrevStates.Select(s => s.ToString()));
                 writer.WriteEndObject();
             }
@@ -90,6 +93,9 @@ namespace Raven.Server.Documents.Handlers.Debugging
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
+
                 writer.WritePropertyName("Result");
 
                 writer.WriteStartArray();

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Raven.Client.ServerWide.Tcp;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
 using Sparrow.Json;
@@ -36,6 +37,8 @@ namespace Raven.Server.Documents.Handlers
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
+
+                    writer.AddPropertiesForDebug(ServerStore);
 
                     writer.WriteArray(context, "Results", connections, (w, c, connection) => c.Write(w, connection.GetConnectionStats()));
 

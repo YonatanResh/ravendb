@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
+using Raven.Server.Extensions;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
 using Sparrow;
@@ -17,6 +18,9 @@ namespace Raven.Server.Documents.Handlers.Debugging
             using (context.OpenReadTransaction())
             {
                 writer.WriteStartObject();
+
+                writer.AddPropertiesForDebug(ServerStore);
+
                 writer.WritePropertyName("Results");
 
                 writer.WriteStartArray();

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Raven.Server.Documents.ETL.Stats;
+using Raven.Server.Extensions;
 using Raven.Server.Json;
 using Raven.Server.Routing;
 using Raven.Server.ServerWide.Context;
@@ -32,6 +33,9 @@ namespace Raven.Server.Documents.ETL.Handlers
                 await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
                 {
                     writer.WriteStartObject();
+                    
+                    writer.AddPropertiesForDebug(ServerStore);
+
                     writer.WriteArray(context, "Results", etlStats, (w, c, stats) => w.WriteObject(context.ReadObject(stats.ToJson(), "etl/stats")));
                     writer.WriteEndObject();
                 }

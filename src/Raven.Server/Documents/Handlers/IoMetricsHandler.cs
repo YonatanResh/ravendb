@@ -18,7 +18,7 @@ namespace Raven.Server.Documents.Handlers
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
                 var result = IoMetricsUtil.GetIoMetricsResponse(Database.GetAllStoragesEnvironment(), Database.GetAllPerformanceMetrics());
-                context.Write(writer, result.ToJson());
+                WriteForDebug(context, writer, result.ToJson());
             }
         }
 

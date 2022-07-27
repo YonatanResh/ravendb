@@ -39,7 +39,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
             using (ContextPool.AllocateOperationContext(out JsonOperationContext context))
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["tx-info"] = ToJson(results)
                 });
@@ -56,7 +56,7 @@ namespace Raven.Server.Documents.Handlers.Debugging
             using (context.OpenReadTransaction())
             await using (var writer = new AsyncBlittableJsonTextWriter(context, ResponseBodyStream()))
             {
-                context.Write(writer, new DynamicJsonValue
+                WriteForDebug(context, writer, new DynamicJsonValue
                 {
                     ["Results"] = new DynamicJsonArray(ClusterTransactionCommand.ReadCommandsBatch(context, Database.Name, from, take))
                 });
